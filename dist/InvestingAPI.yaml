@@ -5604,6 +5604,46 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/portfolioHoldings'
+    cash:
+      type: object
+      properties:
+        cashAvailableForTrade:
+          type: number
+          example: 0
+          description: >-
+            An accounts buying power, this figure dictates the total amount
+            of money that can be used for purchases. Will be reduced by
+            pending orders.
+        cashAvailableForWithdrawal:
+          type: number
+          example: 0
+          description: >-
+            An accounts withdrawal balance, this property only contains
+            settled funds, and money that has already seasoned.
+        cashBalance:
+          type: number
+          example: -12043.23
+          description: >-
+            An accounts total cash balance, including both settled and
+            un-settled money.
+        noBuyingPowerReason:
+          type: array
+          description: Reasons for no buying power.
+          items: {}
+        cashSettlement:
+          type: array
+          description: >-
+            An array of objects containing the time of when money settles as
+            a result of a sale.
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/cashSettlementTime'
+        pendingPaymentsAmount:
+          type: number
+          example: 0
+          description: >-
+            The total amount of money that is pending due to a recent
+            deposit(s)
     MoneyDetailsRes:
       type: object
       properties:
@@ -5618,45 +5658,7 @@ components:
           example: '2021-04-23T18:41:32.440Z'
           description: Timestamp of the last time the deposit was updated.
         cash:
-          type: object
-          properties:
-            cashAvailableForTrade:
-              type: number
-              example: 0
-              description: >-
-                An accounts buying power, this figure dictates the total amount
-                of money that can be used for purchases. Will be reduced by
-                pending orders.
-            cashAvailableForWithdrawal:
-              type: number
-              example: 0
-              description: >-
-                An accounts withdrawal balance, this property only contains
-                settled funds, and money that has already seasoned.
-            cashBalance:
-              type: number
-              example: -12043.23
-              description: >-
-                An accounts total cash balance, including both settled and
-                un-settled money.
-            noBuyingPowerReason:
-              type: array
-              description: Reasons for no buying power.
-              items: {}
-            cashSettlement:
-              type: array
-              description: >-
-                An array of objects containing the time of when money settles as
-                a result of a sale.
-              items:
-                oneOf:
-                  - $ref: '#/components/schemas/cashSettlementTime'
-            pendingPaymentsAmount:
-              type: number
-              example: 0
-              description: >-
-                The total amount of money that is pending due to a recent
-                deposit(s)
+          $ref: '#/components/schemas/cash'
         payments:
           type: object
           properties:
@@ -5720,7 +5722,7 @@ components:
               example: '2017-06-16T15:35:30.617Z'
               description: Time of last update.
             cash:
-              $ref: '#/components/schemas/MoneyDetailsRes/properties/cash'
+              $ref: '#/components/schemas/cash'
         margin:
           $ref: '#/components/schemas/marginObj'
         equity:
@@ -5998,12 +6000,13 @@ components:
           $ref: '#/components/schemas/userID'
         permissions:
           type: array
+          items:
+            enum:
+            - ORDERS_CREATE
+            - MINOR_GRADUATION_TRANSFER
           description: Permission assigned to the authorized user.
           example:
             - ORDERS_CREATE
-          enum:
-            - ORDERS_CREATE
-            - MINOR_GRADUATION_TRANSFER
     leverage:
       type: number
       example: 1
@@ -10213,6 +10216,9 @@ components:
           description: Option OSI.
         expiration:
           type: array
+          items:
+            type: string
+            format: date
           example:
             - '2022-05-10'
             - '2022-05-11'
